@@ -26,10 +26,11 @@ import java.util.logging.Logger;
 
 public class CSVExchangingValues {
     
-    static String originalFileName = "C:\\Users\\Ania\\Documents\\POLSOURCE-praca\\PRACA\\NIKE-11.05\\SF_Incident_Test_20180511.csv.001.part.csv";
+    //static String originalFileName = "C:\\Users\\Ania\\Documents\\POLSOURCE-praca\\PRACA\\NIKE-11.05\\SF_Incident_Test_20180511.csv.001.part.csv";
+    static String originalFileName = "C:\\Users\\Ania\\Desktop\\IncidentTest.csv";
     static String mappingFileName = "C:\\Users\\Ania\\Desktop\\status.csv";
-    static String purposeFileName = "C:\\Users\\Ania\\Desktop\\purpose.csv";
-    static String newFileName = "C:\\Users\\Ania\\Desktop\\IncidentTest.csv";
+    static String purposeFileName = "C:\\Users\\Ania\\Desktop\\Purposes.csv";
+    static String newFileName = "C:\\Users\\Ania\\Desktop\\IncidentTest2.csv";
     static File newFile = new File(newFileName);
     static BufferedReader br;
     static String splitBy = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
@@ -52,9 +53,7 @@ public class CSVExchangingValues {
     //Metoda do pozyskania wartości nazw kolumn
             public static List ReadLabels() throws FileNotFoundException, IOException{
                 
-                br = null;
-                
-                System.gc();
+         
                 
                 br = new BufferedReader(new FileReader(originalFileName));
                 String firstline = br.readLine();
@@ -99,7 +98,7 @@ public class CSVExchangingValues {
             public static void ReadMappingFile() throws FileNotFoundException, IOException{
                 
                 
-                br = new BufferedReader(new FileReader(mappingFileName));
+                br = new BufferedReader(new FileReader(purposeFileName));
                 String ln = "";
                 while((ln = br.readLine())!=null){
                     String [] mappingValues = ln.split(splitBy);
@@ -142,6 +141,7 @@ public class CSVExchangingValues {
                 //Sprawdza wartości priority i zamiena według arkusza mapowań. Dodać tylko TBD ? I sprawdzić wartości w orgu ?
                 String newValue = (String) mappingFile.get(values[PurposeNr]); //= mappingFile[values[StatusNr]];
                 values[PurposeNr] = newValue;
+                System.out.println("value " + values[PurposeNr]);
 
             }
             
@@ -180,10 +180,12 @@ public class CSVExchangingValues {
             ReadMappingFile();
             
             br = new BufferedReader(new FileReader(originalFileName));
+            br.readLine();
             while((line =br.readLine()) != null){
-                ChangeStatusValues();
+                //ChangeStatusValues();
                 //ChangePriorityValues();
                 //ChangeOriginValues();
+                ChangePurposeValues();
                 CreateNewFile();
             }
             fw.close();
