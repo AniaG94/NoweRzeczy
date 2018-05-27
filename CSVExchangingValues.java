@@ -26,17 +26,20 @@ import java.util.logging.Logger;
 
 public class CSVExchangingValues {
     
-    static String originalFileName = "C:\\Users\\Ania\\Desktop\\NIKE_CSSTAGING\\SF_Incident_Test_20180503.csv.001.part.csv";
+    static String originalFileName = "C:\\Users\\Ania\\Documents\\POLSOURCE-praca\\PRACA\\NIKE-11.05\\SF_Incident_Test_20180511.csv.001.part.csv";
     static String mappingFileName = "C:\\Users\\Ania\\Desktop\\status.csv";
+    static String purposeFileName = "C:\\Users\\Ania\\Desktop\\purpose.csv";
     static String newFileName = "C:\\Users\\Ania\\Desktop\\IncidentTest.csv";
     static File newFile = new File(newFileName);
     static BufferedReader br;
     static String splitBy = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
     static String [] values;
+    static String line;
     
     static int StatusNr;
     static int OriginNr;
     static int PriorityNr;
+    static int PurposeNr;
     
     static FileWriter fw;
     static int k =0;
@@ -48,6 +51,10 @@ public class CSVExchangingValues {
     
     //Metoda do pozyskania wartości nazw kolumn
             public static List ReadLabels() throws FileNotFoundException, IOException{
+                
+                br = null;
+                
+                System.gc();
                 
                 br = new BufferedReader(new FileReader(originalFileName));
                 String firstline = br.readLine();
@@ -68,6 +75,9 @@ public class CSVExchangingValues {
                         case "Status":
                             StatusNr =i;
                             break;
+                        case "Purpose__c":
+                            PurposeNr=i;
+                            break;
                         default:
                             break;
                     }
@@ -77,6 +87,7 @@ public class CSVExchangingValues {
                 numbers.add(OriginNr);
                 numbers.add(PriorityNr);
                 numbers.add(StatusNr);
+                numbers.add(PurposeNr);
                 
                 
                 System.out.println("Origin " + OriginNr + " Priority " + PriorityNr + " Status " + StatusNr);
@@ -97,27 +108,54 @@ public class CSVExchangingValues {
                 }
                 System.out.println(mappingFile);
                 
+                
+                
             }
             
             
             
-            public static void ChangeStatusValues() throws IOException{
-                
-                String line = br.readLine();
+            public static void ChangeStatusValues() throws IOException, FileNotFoundException{
+               
+
                 values = line.split(splitBy);
-               // System.out.println("Length " + values.length);
-                //System.out.println("Values status " + values[StatusNr]);
-                
                 
                 //Sprawdza wartości priosity i zamiena według arkusza mapowań. Dodać tylko TBD ? I sprawdzić wartości w orgu ?
                 String newValue = (String) mappingFile.get(values[StatusNr]); //= mappingFile[values[StatusNr]];
                 values[StatusNr] = newValue;
-                
-                    
-                  
+
                 System.out.println("value " + values[StatusNr]);
-                
+               
             }
+            
+            public static void ChangePriorityValues() throws IOException{
+              
+                values = line.split(splitBy);
+                //Sprawdza wartości priority i zamiena według arkusza mapowań. Dodać tylko TBD ? I sprawdzić wartości w orgu ?
+                String newValue = (String) mappingFile.get(values[PriorityNr]); //= mappingFile[values[StatusNr]];
+                values[PriorityNr] = newValue;
+
+            }
+            
+              public static void ChangePurposeValues() throws IOException{
+              
+                values = line.split(splitBy);
+                //Sprawdza wartości priority i zamiena według arkusza mapowań. Dodać tylko TBD ? I sprawdzić wartości w orgu ?
+                String newValue = (String) mappingFile.get(values[PurposeNr]); //= mappingFile[values[StatusNr]];
+                values[PurposeNr] = newValue;
+
+            }
+            
+            public static void ChangeOriginValues() throws IOException{
+              
+                values = line.split(splitBy);
+                //Sprawdza wartości priority i zamiena według arkusza mapowań. Dodać tylko TBD ? I sprawdzić wartości w orgu ?
+                String newValue = (String) mappingFile.get(values[OriginNr]); //= mappingFile[values[StatusNr]];
+                values[OriginNr] = newValue;
+
+            }
+            
+            
+            
             // Save chnged values in new file
             public static void CreateNewFile() throws FileNotFoundException, IOException{
                 for(int j= 0; j<values.length-1; j++){
@@ -126,25 +164,30 @@ public class CSVExchangingValues {
                 fw.write(values[values.length-1]+"\r\n");
                 k++;
                 System.out.println("K " + k);
-                System.out.println("Saved");
+                //System.out.println("Saved");
             }
     
 
     /**
      * @param args the command line arguments
+     * @throws java.io.FileNotFoundException
      * @throws java.io.IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
     
+        try{
             ReadLabels();
             ReadMappingFile();
+            
             br = new BufferedReader(new FileReader(originalFileName));
-            while(br.readLine() != null){
+            while((line =br.readLine()) != null){
                 ChangeStatusValues();
+                //ChangePriorityValues();
+                //ChangeOriginValues();
                 CreateNewFile();
             }
             fw.close();
-            
-            
+        }catch(FileNotFoundException e){System.out.println(e.getMessage());}
+          catch (IOException e){System.out.println(e.getMessage());}
     }
 }
